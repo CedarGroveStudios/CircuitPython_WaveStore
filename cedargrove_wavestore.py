@@ -70,7 +70,9 @@ class WaveStore:
         else:
             self.printd(f"write_screen_to_file: /sd/{filename} NOT saved")
 
-    def write_bitmap_to_file(self, bitmap, filename="bitmap.bmp", overwrite=False):
+    def write_bitmap_to_file(
+        self, bitmap, palette, filename="bitmap.bmp", overwrite=False
+    ):
         """Write a bitmap image to a .bmp file.
         :param bitmap bitmap: The bitmap object. No default.
         :param str filename: The target filename and extension. The file will
@@ -80,7 +82,7 @@ class WaveStore:
         """
         self.printd(f"write_bitmap_to_file: writing /sd/{filename}")
         if filename not in self.get_catalog() or overwrite:
-            save_pixels(f"/sd/{filename}", bitmap)
+            save_pixels(f"/sd/{filename}", bitmap, palette)
             self.printd(f"write_bitmap_to_file: /sd/{filename} saved")
         else:
             self.printd(f"write_bitmap_to_file: /sd/{filename} NOT saved")
@@ -109,9 +111,9 @@ class WaveStore:
         :param str filename: The filename and extension. No default."""
         self.printd(f"read_waveform_ulab: /sd/{filename} ")
         with adafruit_wave.open(f"/sd/{filename}") as w:
-            if w.getsampwidth() != 2 or w.getchannels() != 1:
+            if w.getsampwidth() != 2 or w.getnchannels() != 1:
                 raise ValueError("read_waveform_ulab: unsupported format")
-            return np.frombuffer(w.readframs(w.getnframes()), dtype=np.int16)
+            return np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
 
     def write_wave_to_file(self, wave_table, filename, overwrite=False):
         """Formats and writes wave_table into a standard .wav file.
