@@ -5,7 +5,7 @@
 ================================================================================
 
 A CircuitPython class to create and manage a file-based collection of synthio
-wave_tables.
+synthio file assets.
 
 * Author(s): JG
 
