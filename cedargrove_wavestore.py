@@ -18,8 +18,8 @@ Implementation Notes
   https://circuitpython.org/downloads
 """
 
-import displayio
 import os
+import displayio
 import sdcardio
 import storage
 import ulab.numpy as np
