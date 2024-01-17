@@ -1,4 +1,128 @@
-# SPDX-FileCopyrightText: 2017 Scott Shawcroft, written for Adafruit Industries
 # SPDX-FileCopyrightText: Copyright (c) 2024 JG for Cedar Grove Maker Studios
+# SPDX-License-Identifier: MIT
 #
-# SPDX-License-Identifier: Unlicense
+# wavestore_simpletest.py
+
+import time
+import board
+import displayio
+import synthio
+import adafruit_ili9341
+
+# import audiobusio
+# import audiomixer
+from cedargrove_wavebuilder import WaveBuilder, WaveShape
+from cedargrove_waveviz import WaveViz
+from cedargrove_wavestore import WaveStore
+
+# Instantiate WaveStore to manage SD card contents
+w_store = WaveStore(board.SPI(), board.D20, debug=True)
+
+# Instantiate the 2.4-inch TFT Wing attached to FeatherS2
+displayio.release_displays()  # Release display resources
+display_bus = displayio.FourWire(
+    board.SPI(), command=board.D6, chip_select=board.D5, reset=None
+)
+display = adafruit_ili9341.ILI9341(display_bus, width=320, height=240)
+display.rotation = 0
+splash = displayio.Group()
+display.root_group = splash
+
+# Create two waveforms, icons, and an envelope for the tests
+harp_tone = [
+    (WaveShape.Sine, 1.00, 0.10),
+    (WaveShape.Sine, 2.00, 0.48),
+    (WaveShape.Sine, 3.00, 0.28),
+    (WaveShape.Sine, 4.00, 0.02),
+    (WaveShape.Sine, 5.00, 0.12),
+]
+harp_wave_table = WaveBuilder(oscillators=harp_tone, table_length=512)
+harp_icon = WaveViz(harp_wave_table, (0, 0), (128, 128))
+
+chime_tone = [
+    (WaveShape.Sine, 1.00, -0.60),
+    (WaveShape.Sine, 2.76, 0.20),
+    (WaveShape.Sine, 5.40, 0.10),
+    (WaveShape.Sine, 8.93, 0.07),
+    (WaveShape.Sine, 11.34, 0.01),
+    (WaveShape.Sine, 18.64, 0.01),
+    (WaveShape.Sine, 31.87, 0.01),
+]
+chime_wave_table = WaveBuilder(oscillators=chime_tone, table_length=512)
+chime_icon = WaveViz(chime_wave_table, (130, 0), (128, 128))
+
+string_envelope = synthio.Envelope(
+    attack_time=0.0001,
+    attack_level=1.0,
+    decay_time=0.977,
+    release_time=0.200,
+    sustain_level=0.500,
+)
+
+# Test 1: Get the SD directory and print list to REPL
+print(f"SD directory: {w_store.get_catalog()}")
+
+# Test 2: Write bitmap image to a file
+w_store.write_bitmap(
+    harp_icon.bitmap, harp_icon.palette, filename="harp_icon.bmp", overwrite=True
+)
+
+# Test 3: Read and display saved bitmap
+splash.append(w_store.read_bitmap("harp_icon.bmp"))
+
+# Test 4: Add second icon and save entire screen to a file
+splash.append(chime_icon)
+w_store.write_screen(display, "screenshot.bmp", overwrite=True)
+
+# Test 5: Clear the screen and read and display saved screenshot
+splash.pop()
+splash.pop()
+time.sleep(1)  # Wait for a moment to show blank screen
+splash.append(w_store.read_bitmap("screenshot.bmp"))
+
+# Test 6: Write wave table to a file
+
+# Test 7: Read wave table as memoryview object from a file and display
+
+# Test 8: Read wave table as ulab array from a file and display
+
+# Test 9: Write envelope object to a file
+
+# Test 10: Read envelope object from a file
+
+# Test 11: Write filter object to a file
+
+# Test 12: Read filter object from file
+
+# All tests are done
+while True:
+    pass
+
+"""
+# Synth playback code
+# Configure synthesizer for I2S output on a Feather S2
+audio_output = audiobusio.I2SOut(
+    bit_clock=board.D19, word_select=board.D18, data=board.D17, left_justified=False
+)
+mixer = audiomixer.Mixer(
+    sample_rate=SAMPLE_RATE, buffer_size=4096, voice_count=1, channel_count=1
+)
+audio_output.play(mixer)
+mixer.voice[0].level = 0.50
+
+synth = synthio.Synthesizer(sample_rate=SAMPLE_RATE)
+mixer.play(synth)
+
+note_1 = synthio.Note(440, envelope=tone_envelope, waveform=wave.wave_table)
+
+notes = [261.626, 329.628, 391.995, 523.251]  # Cmaj arpeggio
+
+while True:
+    for note in notes:
+        note_1.frequency = note * 1.0
+        synth.press(note_1)
+        time.sleep(0.1)
+        synth.release(note_1)
+        time.sleep(0.125)
+    time.sleep(1)
+"""
