@@ -16,7 +16,7 @@ from cedargrove_waveviz import WaveViz
 from cedargrove_wavestore import WaveStore
 
 # Instantiate WaveStore to manage SD card contents
-w_store = WaveStore(board.SPI(), board.D20, debug=True)
+w_store = WaveStore(board.SPI(), board.D20, debug=False)
 
 # Instantiate the 2.4-inch TFT Wing attached to FeatherS2
 displayio.release_displays()  # Release display resources
@@ -36,8 +36,8 @@ harp_tone = [
     (WaveShape.Sine, 4.00, 0.02),
     (WaveShape.Sine, 5.00, 0.12),
 ]
-harp_wave_table = WaveBuilder(oscillators=harp_tone, table_length=512)
-harp_icon = WaveViz(harp_wave_table, (0, 0), (128, 128))
+harp = WaveBuilder(oscillators=harp_tone, table_length=512)
+harp_icon = WaveViz(harp.wave_table, (0, 0), (128, 128))
 
 chime_tone = [
     (WaveShape.Sine, 1.00, -0.60),
@@ -48,8 +48,8 @@ chime_tone = [
     (WaveShape.Sine, 18.64, 0.01),
     (WaveShape.Sine, 31.87, 0.01),
 ]
-chime_wave_table = WaveBuilder(oscillators=chime_tone, table_length=512)
-chime_icon = WaveViz(chime_wave_table, (130, 0), (128, 128))
+chime = WaveBuilder(oscillators=chime_tone, table_length=512)
+chime_icon = WaveViz(chime.wave_table, (150, 0), (128, 128))
 
 string_envelope = synthio.Envelope(
     attack_time=0.0001,
@@ -60,25 +60,35 @@ string_envelope = synthio.Envelope(
 )
 
 # Test 1: Get the SD directory and print list to REPL
+print("Test 1: Get the SD directory and print list to REPL")
 print(f"SD directory: {w_store.get_catalog()}")
+print("     completed")
 
 # Test 2: Write bitmap image to a file
+print("Test 2: Write bitmap image to a file")
 w_store.write_bitmap(
     harp_icon.bitmap, harp_icon.palette, filename="harp_icon.bmp", overwrite=True
 )
+print("     completed")
 
 # Test 3: Read and display saved bitmap
+print("Test 3: Read and display saved bitmap")
 splash.append(w_store.read_bitmap("harp_icon.bmp"))
+print("     completed")
 
 # Test 4: Add second icon and save entire screen to a file
+print("Test 4: Add second icon and save entire screen to a file")
 splash.append(chime_icon)
 w_store.write_screen(display, "screenshot.bmp", overwrite=True)
+print("     completed")
 
 # Test 5: Clear the screen and read and display saved screenshot
+print("Test 5: Clear the screen and read and display saved screenshot")
 splash.pop()
 splash.pop()
 time.sleep(1)  # Wait for a moment to show blank screen
 splash.append(w_store.read_bitmap("screenshot.bmp"))
+print("     completed")
 
 # Test 6: Write wave table to a file
 
@@ -94,7 +104,8 @@ splash.append(w_store.read_bitmap("screenshot.bmp"))
 
 # Test 12: Read filter object from file
 
-# All tests are done
+# All tests completed
+print("*** All tests completed ***")
 while True:
     pass
 

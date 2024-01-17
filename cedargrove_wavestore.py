@@ -64,11 +64,11 @@ class WaveStore:
         :param bool overwrite: Overwrite the file. Defaults to False; do not overwrite.
         """
         self.printd(f"write_screen_to_file: writing /sd/{filename}")
-        if filename not in self.get_catalog() or overwrite:
+        if filename in self.get_catalog() and not overwrite:
+            self.printd(f"write_screen_to_file: /sd/{filename} NOT saved")
+        else:
             save_pixels(f"/sd/{filename}", display)
             self.printd(f"write_screen_to_file: /sd/{filename} saved")
-        else:
-            self.printd(f"write_screen_to_file: /sd/{filename} NOT saved")
 
     def write_bitmap(self, bitmap, palette, filename="bitmap.bmp", overwrite=False):
         """Write a bitmap image to a .bmp file.
@@ -80,11 +80,12 @@ class WaveStore:
         overwrite.
         """
         self.printd(f"write_bitmap_to_file: writing /sd/{filename}")
-        if filename not in self.get_catalog() or overwrite:
+
+        if filename in self.get_catalog() and not overwrite:
+            self.printd(f"write_bitmap_to_file: /sd/{filename} NOT saved")
+        else:
             save_pixels(f"/sd/{filename}", bitmap, palette)
             self.printd(f"write_bitmap_to_file: /sd/{filename} saved")
-        else:
-            self.printd(f"write_bitmap_to_file: /sd/{filename} NOT saved")
 
     def read_bitmap(self, filename="bitmap.bmp"):
         """Read a .bmp file and return the bitmap as a TileGrid object to be
@@ -123,12 +124,13 @@ class WaveStore:
         overwrite.
         """
         self.printd(f"write_wave_to_file: writing /sd/{filename}")
-        if filename not in self.get_catalog() or overwrite:
+        if filename in self.get_catalog() and not overwrite:
+            self.printd(f"write_wave_to_file: /sd/{filename} NOT saved")
+        else:
             with adafruit_wave.open(f"/sd/{filename}", mode="w") as w:
                 pass
             self.printd(f"write_wave_to file: /sd/{filename} saved")
-        else:
-            self.printd(f"write_wave_to_file: /sd/{filename} NOT saved")
+
         self.printd(f"{wave_table} {w}")
 
     def get_catalog(self, path="/sd"):
