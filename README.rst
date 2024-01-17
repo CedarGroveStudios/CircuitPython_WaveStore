@@ -15,7 +15,7 @@ Introduction
     :target: https://github.com/psf/black
     :alt: Code Style: Black
 
-A CircuitPython class to create and manage a collection of synthio synthio file assets.
+A CircuitPython class to create and manage a collection of synthio object file assets.
 
 
 Dependencies
