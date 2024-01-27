@@ -3,16 +3,23 @@
 #
 # wavestore_simpletest.py
 
+import gc
 import time
 import board
 import displayio
 import synthio
 import adafruit_ili9341
 
+import ulab.numpy as np
+import bitmaptools
+
+from adafruit_display_shapes.polygon import Polygon
+
 # import audiobusio
 # import audiomixer
 from cedargrove_wavebuilder import WaveBuilder, WaveShape
 from cedargrove_waveviz import WaveViz
+from cedargrove_waveviz_helper import waveviz_helper
 from cedargrove_wavestore import WaveStore
 
 # Instantiate WaveStore to manage SD card contents
@@ -28,6 +35,9 @@ display.rotation = 0
 splash = displayio.Group()
 display.root_group = splash
 
+m0 = gc.mem_free()
+t0 = time.monotonic()
+
 # Create two waveforms, icons, and an envelope for the tests
 harp_tone = [
     (WaveShape.Sine, 1.00, 0.10),
@@ -37,7 +47,8 @@ harp_tone = [
     (WaveShape.Sine, 5.00, 0.12),
 ]
 harp = WaveBuilder(oscillators=harp_tone, table_length=512)
-harp_icon = WaveViz(harp.wave_table, (0, 0), (128, 128))
+# harp_icon = WaveViz(harp.wave_table, (10, 10), (128, 128))
+harp_icon = waveviz_helper(harp.wave_table, (10, 10), (128, 128), output="bitmap")
 
 chime_tone = [
     (WaveShape.Sine, 1.00, -0.60),
@@ -49,7 +60,7 @@ chime_tone = [
     (WaveShape.Sine, 31.87, 0.01),
 ]
 chime = WaveBuilder(oscillators=chime_tone, table_length=512)
-chime_icon = WaveViz(chime.wave_table, (150, 0), (128, 128))
+chime_icon = WaveViz(chime.wave_table, (160, 10), (128, 128))
 
 string_envelope = synthio.Envelope(
     attack_time=0.0001,
@@ -66,9 +77,10 @@ print("     completed")
 
 # Test 2: Write bitmap image to a file
 print("Test 2: Write bitmap image to a file")
-w_store.write_bitmap(
+"""w_store.write_bitmap(
     harp_icon.bitmap, harp_icon.palette, filename="harp_icon.bmp", overwrite=True
-)
+)"""
+w_store.write_bitmap(harp_icon[0], harp_icon[1], filename="harp_icon.bmp", overwrite=True)
 print("     completed")
 
 # Test 3: Read and display saved bitmap
@@ -104,8 +116,13 @@ print("     completed")
 
 # Test 12: Read filter object from file
 
+# Test 13: Display wave table bitmap with transparency
+splash.append(displayio.TileGrid(harp_icon[0], pixel_shader=harp_icon[1], x=100, y=100))
+
 # All tests completed
 print("*** All tests completed ***")
+print(f"memfree delta: {gc.mem_free() - m0}")
+print(f"time delta: {time.monotonic() - t0}")
 while True:
     pass
 
