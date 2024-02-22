@@ -20,6 +20,7 @@ Implementation Notes
 
 import os
 import displayio
+import synthio
 import sdcardio
 import storage
 import ulab.numpy as np
@@ -63,12 +64,20 @@ class WaveStore:
         written to the root directory of the SD card. No default.
         :param bool overwrite: Overwrite the file. Defaults to False; do not overwrite.
         """
-        self.printd(f"write_screen_to_file: writing /sd/{filename}")
+        self.printd(f"write_screen: writing /sd/{filename}")
         if filename in self.get_catalog() and not overwrite:
-            self.printd(f"write_screen_to_file: /sd/{filename} NOT saved")
+            self.printd(f"write_screen: /sd/{filename} NOT saved")
         else:
             save_pixels(f"/sd/{filename}", display)
             self.printd(f"write_screen_to_file: /sd/{filename} saved")
+
+    def read_bitmap(self, filename="bitmap.bmp"):
+        """Read a .bmp file and return the bitmap as a TileGrid object to be
+        added to a displayio.Group object.
+        :param str filename: The target filename and extension. No default."""
+        self.printd(f"read_bitmap_from_file: /sd/{filename}")
+        image = displayio.OnDiskBitmap(f"/sd/{filename}")
+        return displayio.TileGrid(image, pixel_shader=image.pixel_shader)
 
     def write_bitmap(self, bitmap, palette, filename="bitmap.bmp", overwrite=False):
         """Write a bitmap image to a .bmp file.
@@ -79,26 +88,53 @@ class WaveStore:
         :param bool overwrite: Overwrite the file. Defaults to False; do not
         overwrite.
         """
-        self.printd(f"write_bitmap_to_file: writing /sd/{filename}")
+        self.printd(f"write_bitmap: writing /sd/{filename}")
 
         if filename in self.get_catalog() and not overwrite:
-            self.printd(f"write_bitmap_to_file: /sd/{filename} NOT saved")
+            self.printd(f"write_bitmap: /sd/{filename} NOT saved")
         else:
             save_pixels(f"/sd/{filename}", bitmap, palette)
-            self.printd(f"write_bitmap_to_file: /sd/{filename} saved")
+            self.printd(f"write_bitmap: /sd/{filename} saved")
 
-    def read_bitmap(self, filename="bitmap.bmp"):
-        """Read a .bmp file and return the bitmap as a TileGrid object to be
-        added to a displayio.Group object.
-        :param str filename: The target filename and extension. No default."""
-        self.printd(f"read_bitmap_from_file: /sd/{filename}")
-        image = displayio.OnDiskBitmap(f"/sd/{filename}")
-        return displayio.TileGrid(image, pixel_shader=image.pixel_shader)
+    def read_envelope(self, filename="envelope.env"):
+        """Reads envelope file and returns a synthio.Envelope object.
+        :param str filename: The filename and extension. No default."""
+        self.printd(f"read_envelope: /sd/{filename}")
+        with open(f"/sd/{filename}", mode="r") as r:
+            params = r.read()
+            params = eval(params)
+            new_env = synthio.Envelope(
+                attack_time=params[0],
+                decay_time=params[1],
+                release_time=params[2],
+                attack_level=params[3],
+                sustain_level=params[4],
+            )
+            self.printd(f"read_envelope: {new_env}")
+            return new_env
+
+    def write_envelope(self, envelope, filename, overwrite=False):
+        """Writes synthio.Envelope object into a text file.
+        :param synthio.Envelope envelope: The envelope object. No default.
+        :param str filename: The target filename and extension. The file will be
+        written to the root directory of the SD card. No default.
+        :param bool overwrite: Overwrite the file. Defaults to False; do not
+        overwrite.
+        """
+        self.printd(f"write_envelope: writing /sd/{filename}")
+        if filename in self.get_catalog() and not overwrite:
+            self.printd(f"write_envelope: /sd/{filename} NOT written")
+        else:
+            params = str([p for p in envelope])
+            with open(f"/sd/{filename}", mode="w") as w:
+                w.write(params)
+                self.printd(f"write_envelope: /sd/{filename} written")
+                self.printd(f"write_envelope: {envelope}")
 
     def read_wavetable(self, filename):
         """Reads wave file and returns a memoryview object.
         :param str filename: The filename and extension. No default."""
-        self.printd(f"read_waveform: /sd/{filename}")
+        self.printd(f"read_wavetable: /sd/{filename}")
         with adafruit_wave.open(f"/sd/{filename}") as w:
             if w.getsampwidth() != 2 or w.getnchannels() != 1:
                 raise ValueError("read_waveform: unsupported format")
@@ -115,23 +151,26 @@ class WaveStore:
                 raise ValueError("read_waveform_ulab: unsupported format")
             return np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
 
-    def write_wavetable(self, wave_table, filename, overwrite=False):
+    def write_wavetable(self, wave_table, filename, samp_rate=22050, overwrite=False):
         """Formats and writes wave_table into a standard .wav file.
         :param ReadableBuffer wave_table: The wave_table object. No default.
         :param str filename: The target filename and extension. The file will be
         written to the root directory of the SD card. No default.
+        :param int samp_rate: The sample rate (same as frame rate) for the wave
+        table file. Defaults to 22050 samples per second.
         :param bool overwrite: Overwrite the file. Defaults to False; do not
         overwrite.
         """
-        self.printd(f"write_wave_to_file: writing /sd/{filename}")
+        self.printd(f"write_wavetable: writing /sd/{filename}")
         if filename in self.get_catalog() and not overwrite:
-            self.printd(f"write_wave_to_file: /sd/{filename} NOT saved")
+            self.printd(f"write_wavetable: /sd/{filename} NOT written")
         else:
-            with adafruit_wave.open(f"/sd/{filename}", mode="w") as w:
-                pass
-            self.printd(f"write_wave_to file: /sd/{filename} saved")
-
-        self.printd(f"{wave_table} {w}")
+            with adafruit_wave.open(f"/sd/{filename}", mode="w") as wf:
+                wf.setnchannels(1)
+                wf.setsampwidth(2)  # each sample is two bytes
+                wf.setframerate(samp_rate)
+                wf.writeframes(wave_table)
+            self.printd(f"write_wavetable: /sd/{filename} written")
 
     def get_catalog(self, path="/sd"):
         """Looks at the SD card file system and returns a list of files in the
@@ -150,7 +189,7 @@ class WaveStore:
         """Print string contents if debug is True.
         :param str string: The string to be printed."""
         if self._debug:
-            print(string)
+            print(f"   WaveStore: {string}")
 
 
 def lerp(value_0, value_1, blend):
