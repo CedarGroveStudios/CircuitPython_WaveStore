@@ -79,14 +79,15 @@ chime_steel_envelope = synthio.Envelope(
 chime_steel_env_icon = WaveViz(chime_steel_envelope, 80, 96, 64, 32)
 
 # Start testing
+
+# Test 1: Get the SD directory and print list to REPL
 if 1 in TEST_LIST:
-    # Test 1: Get the SD directory and print list to REPL
     print("\nTest 1: Get the SD directory and print list to REPL")
     print(f"SD directory: {w_store.get_catalog()}")
     print(" completed")
 
+# Test 2: Write waveform bitmap images to files
 if 2 in TEST_LIST:
-    # Test 2: Write waveform bitmap images to files
     print("\nTest 2: Write bitmap image to a file")
     w_store.write_bitmap(
         harp_icon.bitmap,
@@ -102,8 +103,8 @@ if 2 in TEST_LIST:
     )
     print(" completed")
 
+# Test 3: Read and display saved bitmap
 if 3 in TEST_LIST:
-    # Test 3: Read and display saved bitmap
     print("\nTest 3: Read and display saved bitmap")
     new_bitmap = w_store.read_bitmap("harp_icon.bmp")
     new_bitmap.x = 10
@@ -111,8 +112,8 @@ if 3 in TEST_LIST:
     splash.append(new_bitmap)
     print(" completed")
 
+# Test 4: Add second icon and envelopes; save entire screen to a file
 if 4 in TEST_LIST:
-    # Test 4: Add second icon and envelopes; save entire screen to a file
     print("\nTest 4: Add second icon and envelopes; save entire screen to a file")
     splash.append(chime_icon)
     splash.append(string_env_icon)
@@ -120,8 +121,8 @@ if 4 in TEST_LIST:
     w_store.write_screen(display, "screenshot.bmp", overwrite=True)
     print(" completed")
 
+# Test 5: Clear the screen and read and display saved screenshot
 if 5 in TEST_LIST:
-    # Test 5: Clear the screen and read and display saved screenshot
     print("\nTest 5: Clear the screen and read and display saved screenshot")
     splash.pop()
     splash.pop()
@@ -129,8 +130,8 @@ if 5 in TEST_LIST:
     splash.append(w_store.read_bitmap("screenshot.bmp"))
     print(" completed")
 
+# Test 6: Write wave tables to files
 if 6 in TEST_LIST:
-    # Test 6: Write wave tables to files
     print("\nTest 6: Write wave tables to files")
     print(harp_icon.wave_table)
     w_store.write_wavetable(
@@ -142,33 +143,33 @@ if 6 in TEST_LIST:
     )
     print(" completed")
 
+# Test 7: Read wavetable as memory_view object from a file and display
 if 7 in TEST_LIST:
-    # Test 7: Read wavetable as memory_view object from a file and display
     print("\nTest 7: Read wavetable as memory_view object from a file and display")
     wave_table = w_store.read_wavetable("harp.wav")
     print(f"w_store.read_wavetable: {wave_table}")
     harp_icon.wave_table = w_store.read_wavetable("harp.wav")
     print(" completed")
 
+# Test 8: Read wave table as ulab array from a file and display
 if 8 in TEST_LIST:
-    # Test 8: Read wave table as ulab array from a file and display
     pass
 
+# Test 9: Write envelope objects to files
 if 9 in TEST_LIST:
-    # Test 9: Write envelope objects to files
     print("\nTest 9: Write envelope objects to files")
     w_store.write_envelope(string_envelope, "string.env", overwrite=True)
     w_store.write_envelope(chime_steel_envelope, "chime_steel.env", overwrite=True)
     print(" completed")
 
+# Test 10: Read envelope object from a file
 if 10 in TEST_LIST:
-    # Test 10: Read envelope object from a file
     print("\nTest 10: Read envelope object from a file")
     new_env = w_store.read_envelope("string.env")
     print(" completed")
 
+# Test 11: Write envelope bitmap image to a file
 if 11 in TEST_LIST:
-    # Test 11: Write envelope bitmap image to a file
     print("\nTest 11: Write envelope bitmap image to a file")
     w_store.write_bitmap(
         string_env_icon.bitmap,
@@ -184,16 +185,16 @@ if 11 in TEST_LIST:
     )
     print(" completed")
 
+# Test 12: Write filter object to a file
 if 12 in TEST_LIST:
-    # Test 12: Write filter object to a file
     pass
 
+# Test 13: Read filter object from file
 if 13 in TEST_LIST:
-    # Test 13: Read filter object from file
     pass
 
+# Test 14: Display wave table bitmap with transparency
 if 14 in TEST_LIST:
-    # Test 14: Display wave table bitmap with transparency
     print("\nTest 14: Display wave table bitmap with transparency")
     new_bitmap = w_store.read_bitmap("streetchicken.bmp")
     splash.append(
