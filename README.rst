@@ -170,7 +170,7 @@ Usage Example
         new_bitmap.y = 10
         splash.append(new_bitmap)
         print(" completed")
-    
+
     if 4 in TEST_LIST:
         # Test 4: Add second icon and envelopes; save entire screen to a file
         print("\nTest 4: Add second icon and envelopes; save entire screen to a file")
@@ -179,7 +179,7 @@ Usage Example
         splash.append(chime_steel_env_icon)
         w_store.write_screen(display, "screenshot.bmp", overwrite=True)
         print(" completed")
-    
+
     if 5 in TEST_LIST:
         # Test 5: Clear the screen and read and display saved screenshot
         print("\nTest 5: Clear the screen and read and display saved screenshot")
@@ -188,7 +188,7 @@ Usage Example
         time.sleep(1)  # Wait for a moment to show blank screen
         splash.append(w_store.read_bitmap("screenshot.bmp"))
         print(" completed")
-    
+
     if 6 in TEST_LIST:
         # Test 6: Write wave tables to files
         print("\nTest 6: Write wave tables to files")
@@ -201,7 +201,7 @@ Usage Example
             chime_icon.wave_table, "chime_steel.wav", samp_rate=SAMP_RATE, overwrite=True
         )
         print(" completed")
-    
+
     if 7 in TEST_LIST:
         # Test 7: Read wavetable as memory_view object from a file and display
         print("\nTest 7: Read wavetable as memory_view object from a file and display")
@@ -209,24 +209,24 @@ Usage Example
         print(f"w_store.read_wavetable: {wave_table}")
         harp_icon.wave_table = w_store.read_wavetable("harp.wav")
         print(" completed")
-    
+
     if 8 in TEST_LIST:
         # Test 8: Read wave table as ulab array from a file and display
         pass
-    
+
     if 9 in TEST_LIST:
         # Test 9: Write envelope objects to files
         print("\nTest 9: Write envelope objects to files")
         w_store.write_envelope(string_envelope, "string.env", overwrite=True)
         w_store.write_envelope(chime_steel_envelope, "chime_steel.env", overwrite=True)
         print(" completed")
-    
+
     if 10 in TEST_LIST:
         # Test 10: Read envelope object from a file
         print("\nTest 10: Read envelope object from a file")
         new_env = w_store.read_envelope("string.env")
         print(" completed")
-    
+
     if 11 in TEST_LIST:
         # Test 11: Write envelope bitmap image to a file
         print("\nTest 11: Write envelope bitmap image to a file")
@@ -243,15 +243,15 @@ Usage Example
             overwrite=True,
         )
         print(" completed")
-    
+
     if 12 in TEST_LIST:
         # Test 12: Write filter object to a file
         pass
-    
+
     if 13 in TEST_LIST:
         # Test 13: Read filter object from file
         pass
-    
+
     if 14 in TEST_LIST:
         # Test 14: Display wave table bitmap with transparency
         print("\nTest 14: Display wave table bitmap with transparency")
@@ -262,7 +262,7 @@ Usage Example
             )
         )
     print(" completed")
-    
+
     # All tests completed
     print("\n*** All tests completed ***")
     # pylint: disable=no-member
