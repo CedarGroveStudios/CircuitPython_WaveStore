@@ -214,7 +214,7 @@ if 13 in TEST_LIST:
 # Test 14: Display wave table bitmap with transparency
 if 14 in TEST_LIST:
     print("\nTest 14: Display wave table bitmap with transparency")
-    new_bitmap = w_store.read_bitmap("streetchicken.bmp", path=FOLDER)
+    new_bitmap = w_store.read_bitmap("streetchicken.bmp", path="/sd")
     splash.append(
         displayio.TileGrid(
             new_bitmap.bitmap, pixel_shader=new_bitmap.pixel_shader, x=170, y=15
