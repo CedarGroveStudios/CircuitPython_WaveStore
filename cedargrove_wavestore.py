@@ -133,7 +133,7 @@ class WaveStore:
         if filename in self.get_catalog(path) and not overwrite:
             self.printd(f"write_envelope: {path}/{filename} NOT written")
         else:
-            params = str(list(envelope))
+            params = str(list(envelope)) + "\n"
             with open(f"{path}/{filename}", mode="w") as w:
                 w.write(params)
                 self.printd(f"write_envelope: {path}/{filename} written")
