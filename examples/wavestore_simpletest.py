@@ -14,9 +14,11 @@ from cedargrove_wavebuilder import WaveBuilder, WaveShape
 from cedargrove_waveviz import WaveViz
 from cedargrove_wavestore import WaveStore
 
-DEBUG = False
+DEBUG = True
 SAMP_RATE = 22_050  # samples per second
 TEST_LIST = list(range(0, 20))  # List of tests to perform
+
+FOLDER = "/sd/voices"  # The storage folder path (no trailing slash)
 
 synth = synthio.Synthesizer(sample_rate=SAMP_RATE)
 
@@ -83,7 +85,7 @@ chime_steel_env_icon = WaveViz(chime_steel_envelope, 80, 96, 64, 32)
 # Test 1: Get the SD directory and print list to REPL
 if 1 in TEST_LIST:
     print("\nTest 1: Get the SD directory and print list to REPL")
-    print(f"SD directory: {w_store.get_catalog()}")
+    print(f"SD directory: {w_store.get_catalog(path=FOLDER)}")
     print(" completed")
 
 # Test 2: Write waveform bitmap images to files
@@ -93,12 +95,14 @@ if 2 in TEST_LIST:
         harp_icon.bitmap,
         harp_icon.pixel_shader,
         filename="harp_icon.bmp",
+        path=FOLDER,
         overwrite=True,
     )
     w_store.write_bitmap(
         chime_icon.bitmap,
         chime_icon.pixel_shader,
         filename="chime_steel_icon.bmp",
+        path=FOLDER,
         overwrite=True,
     )
     print(" completed")
@@ -106,28 +110,30 @@ if 2 in TEST_LIST:
 # Test 3: Read and display saved bitmap
 if 3 in TEST_LIST:
     print("\nTest 3: Read and display saved bitmap")
-    new_bitmap = w_store.read_bitmap("harp_icon.bmp")
+    new_bitmap = w_store.read_bitmap("harp_icon.bmp", path=FOLDER)
     new_bitmap.x = 10
     new_bitmap.y = 10
     splash.append(new_bitmap)
     print(" completed")
 
-# Test 4: Add second icon and envelopes; save entire screen to a file
+# Test 4: Add second icon and envs; save screen in root directory
 if 4 in TEST_LIST:
-    print("\nTest 4: Add second icon and envelopes; save entire screen to a file")
+    print("\nTest 4: Test 4: Add second icon and envs; save screen in root directory")
     splash.append(chime_icon)
     splash.append(string_env_icon)
     splash.append(chime_steel_env_icon)
-    w_store.write_screen(display, "screenshot.bmp", overwrite=True)
+    w_store.write_screen(display, "screenshot.bmp", path="/sd", overwrite=True)
     print(" completed")
 
-# Test 5: Clear the screen and read and display saved screenshot
+# Test 5: Clear the screen and read and display saved screenshot from the root directory
 if 5 in TEST_LIST:
-    print("\nTest 5: Clear the screen and read and display saved screenshot")
+    print(
+        "\nTest 5: Clear the screen and read and display saved screenshot from the root directory"
+    )
     splash.pop()
     splash.pop()
     time.sleep(1)  # Wait for a moment to show blank screen
-    splash.append(w_store.read_bitmap("screenshot.bmp"))
+    splash.append(w_store.read_bitmap("screenshot.bmp", path="/sd"))
     print(" completed")
 
 # Test 6: Write wave tables to files
@@ -135,20 +141,28 @@ if 6 in TEST_LIST:
     print("\nTest 6: Write wave tables to files")
     print(harp_icon.wave_table)
     w_store.write_wavetable(
-        harp_icon.wave_table, "harp.wav", samp_rate=SAMP_RATE, overwrite=True
+        harp_icon.wave_table,
+        "harp.wav",
+        path=FOLDER,
+        samp_rate=SAMP_RATE,
+        overwrite=True,
     )
     print(chime_icon.wave_table)
     w_store.write_wavetable(
-        chime_icon.wave_table, "chime_steel.wav", samp_rate=SAMP_RATE, overwrite=True
+        chime_icon.wave_table,
+        "chime_steel.wav",
+        path=FOLDER,
+        samp_rate=SAMP_RATE,
+        overwrite=True,
     )
     print(" completed")
 
 # Test 7: Read wavetable as memory_view object from a file and display
 if 7 in TEST_LIST:
     print("\nTest 7: Read wavetable as memory_view object from a file and display")
-    wave_table = w_store.read_wavetable("harp.wav")
+    wave_table = w_store.read_wavetable("harp.wav", path=FOLDER)
     print(f"w_store.read_wavetable: {wave_table}")
-    harp_icon.wave_table = w_store.read_wavetable("harp.wav")
+    harp_icon.wave_table = w_store.read_wavetable("harp.wav", path=FOLDER)
     print(" completed")
 
 # Test 8: Read wave table as ulab array from a file and display
@@ -158,14 +172,16 @@ if 8 in TEST_LIST:
 # Test 9: Write envelope objects to files
 if 9 in TEST_LIST:
     print("\nTest 9: Write envelope objects to files")
-    w_store.write_envelope(string_envelope, "string.adsr", overwrite=True)
-    w_store.write_envelope(chime_steel_envelope, "chime_steel.adsr", overwrite=True)
+    w_store.write_envelope(string_envelope, "string.adsr", path=FOLDER, overwrite=True)
+    w_store.write_envelope(
+        chime_steel_envelope, "chime_steel.adsr", path=FOLDER, overwrite=True
+    )
     print(" completed")
 
 # Test 10: Read envelope object from a file
 if 10 in TEST_LIST:
     print("\nTest 10: Read envelope object from a file")
-    new_env = w_store.read_envelope("string.adsr")
+    new_env = w_store.read_envelope("string.adsr", path=FOLDER)
     print(" completed")
 
 # Test 11: Write envelope bitmap image to a file
@@ -175,12 +191,14 @@ if 11 in TEST_LIST:
         string_env_icon.bitmap,
         string_env_icon.pixel_shader,
         filename="string_adsr_icon.bmp",
+        path=FOLDER,
         overwrite=True,
     )
     w_store.write_bitmap(
         chime_steel_env_icon.bitmap,
         chime_steel_env_icon.pixel_shader,
         filename="chime_steel_adsr_icon.bmp",
+        path=FOLDER,
         overwrite=True,
     )
     print(" completed")
@@ -196,7 +214,7 @@ if 13 in TEST_LIST:
 # Test 14: Display wave table bitmap with transparency
 if 14 in TEST_LIST:
     print("\nTest 14: Display wave table bitmap with transparency")
-    new_bitmap = w_store.read_bitmap("streetchicken.bmp")
+    new_bitmap = w_store.read_bitmap("streetchicken.bmp", path=FOLDER)
     splash.append(
         displayio.TileGrid(
             new_bitmap.bitmap, pixel_shader=new_bitmap.pixel_shader, x=170, y=15
