@@ -158,14 +158,14 @@ if 8 in TEST_LIST:
 # Test 9: Write envelope objects to files
 if 9 in TEST_LIST:
     print("\nTest 9: Write envelope objects to files")
-    w_store.write_envelope(string_envelope, "string.env", overwrite=True)
-    w_store.write_envelope(chime_steel_envelope, "chime_steel.env", overwrite=True)
+    w_store.write_envelope(string_envelope, "string.adsr", overwrite=True)
+    w_store.write_envelope(chime_steel_envelope, "chime_steel.adsr", overwrite=True)
     print(" completed")
 
 # Test 10: Read envelope object from a file
 if 10 in TEST_LIST:
     print("\nTest 10: Read envelope object from a file")
-    new_env = w_store.read_envelope("string.env")
+    new_env = w_store.read_envelope("string.adsr")
     print(" completed")
 
 # Test 11: Write envelope bitmap image to a file
@@ -174,13 +174,13 @@ if 11 in TEST_LIST:
     w_store.write_bitmap(
         string_env_icon.bitmap,
         string_env_icon.pixel_shader,
-        filename="string_env_icon.bmp",
+        filename="string_adsr_icon.bmp",
         overwrite=True,
     )
     w_store.write_bitmap(
         chime_steel_env_icon.bitmap,
         chime_steel_env_icon.pixel_shader,
-        filename="chime_steel_env_icon.bmp",
+        filename="chime_steel_adsr_icon.bmp",
         overwrite=True,
     )
     print(" completed")
