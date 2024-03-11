@@ -20,7 +20,7 @@ A CircuitPython class to create and manage a collection of synthio object file a
 
 Dependencies
 =============
-This driver depends on:
+This library depends on:
 
 * `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_
 
